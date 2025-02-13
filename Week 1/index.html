@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+		
+		<style>
+			body {
+				display: flex;
+				justify-content: center;
+				font-family: Arial, Helvetica, sans-serif;
+			}
+			h1 {
+				font-size: 30px;
+				margin-bottom: 15px;
+				border-bottom: 1px solid #c9c9c9;
+				padding-bottom: 5px;
+			}
+			h2 {
+				font-family: Arial;
+				margin-bottom: 10px;
+			}
+			p {
+				margin: 0;
+			}
+			div {
+				width: 400px;
+			}
+			ul {
+				margin: 0;
+			}
+			button {
+				font-size: 25px;
+				outline: none;
+				border: none;
+				background: rgb(252, 240, 226);
+				border-radius: 100px;
+				padding: 10px;
+				padding-left:  20px;
+				padding-right: 20px;
+
+
+				width: 150px;
+				transition: width 200ms;
+				
+			}
+			button:hover {
+				background: rgb(240, 228, 214);
+				width: 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<h1 class="main-header" id="my-id">Hello, World!</h1>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			</p>
+	
+			<h1>Things that are in a list</h1>
+			<ol>
+				<li>Thing 1</li>
+				<li>Thing 2</li>
+				<li>Thing 3</li>
+			</ol>
+			<h2>Favorite Movies</h2>
+			<ul>
+				<li>Matrix</li>
+				<li>Avengers: Infinity War</li>
+				<li>Guardians of the Galaxy</li>
+			</ul>
+			
+			<button>Click me</button>
+
+			<pre>
+				<code class="language-javascript">// Example code
+console.log("hello, javascript");</code>
+			</pre>
+		</div>
+		<script>hljs.highlightAll();</script>
+	</body>
+</html>
