@@ -179,6 +179,47 @@
 		.weAreFound:active {
 			transform: translate(0px, 3px);
 		}
+
+
+		.deepsee {
+			font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+			font-size: 1.4em;
+			text-transform: uppercase;
+			color: black;
+
+			padding: 12px 30px;
+			border: 1px solid black;
+			border-radius: 100px;
+
+			cursor: pointer;
+
+			transition: transform 200ms ease-out;
+		}
+		.deepsee>div {
+			position: relative;
+			/* background: red; */
+			overflow: hidden;
+		}
+		.deepsee span {
+			display: block;
+		}
+		.deepsee span:last-child {
+			position: absolute;
+			top:  100%;
+			left: 0;
+		}
+
+		.deepsee:hover {
+			transform: scale(1.01);
+		}
+		.deepsee:hover span {
+			transform: translateY(-100%);
+			transition: transform 300ms ease-out;
+		}
+		.deepsee:active {
+			transition-duration: 50ms;
+			transform: scale(0.99);
+		}
 	</style>
 </head>
 <body>
@@ -188,7 +229,12 @@
 		<button class="duolingo">Duolingo</button>
 		<button class="impact">Impact</button>
 		<button class="weAreFound"><span>Get in touch</span></button>
-		
+		<button class="deepsee">
+			<div>
+				<span>Start the Experience</span>
+				<span>Start the Experience</span>
+			</div>
+		</button>
 	</div>
 </body>
 </html>
