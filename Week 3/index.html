@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JavaScript Intro</title>
+
+	<style>
+		body {
+			font-family: "Arial", sans-serif;
+
+			padding-left: 20px;
+		}
+		h1 {
+			border-bottom: 1px solid #999;
+			padding: 10px 0;
+			width: 300px;
+		}
+		input {
+			height: 24px;
+			padding: 0px 10px;
+			border-radius: 4px;
+			border: 1px solid #999;
+		}
+		input:focus, button:focus {
+			outline: solid 1.5px #fe9646 !important;
+		}
+
+		#addTaskButton {
+			outline: none;
+			background: #12779c;
+			color: white;
+			border-radius: 4px;
+			border: none;
+			padding: 0px 20px;
+			height: 26px;
+		}
+		#addTaskButton:active {
+			background: #0f5d79;
+		}
+
+		#taskList li>* {
+			display: inline-block;
+			margin: 6px 8px;
+		}
+
+		.checked p {
+			text-decoration: line-through !important;
+		}
+	</style>
+</head>
+<body>
+	<!--
+		- Add things to the list
+		- A way to check items off
+		- A way to delete items from list
+		- Try to make it pretty with CSS
+	-->
+	<h1>Todo List</h1>
+	<input id="userInput" type="text" placeholder="Add a task" />
+	<button id="addTaskButton" onclick="addTask()">Add task</button>
+	<ul id="taskList">
+		
+	</ul>
+
+	<script>
+		document.getElementById("userInput").addEventListener("keypress", event => {
+			if (event.key == "Enter") {
+				addTask();
+			}
+		});
+		document.addEventListener("contextmenu", event => {
+			event.preventDefault();
+		})
+		function addTask() {
+			if (document.getElementById("userInput").value === "") {
+				return;
+			}
+			/*
+			- Get input from user
+			- Clone template item
+			- Insert user input into item
+			- Insert new item into the list
+			*/
+
+			let userInputElement = document.getElementById("userInput");
+			let taskName = userInputElement.value;
+			
+			let newItem = document.createElement("li");
+			let textContent = document.createElement("p");
+			textContent.innerHTML = taskName;
+			newItem.appendChild(textContent);
+			
+			let deleteButton = document.createElement("button");
+			deleteButton.innerHTML = "&times;";
+			newItem.appendChild(deleteButton);
+
+			textContent.addEventListener("click", event => {
+				if (event.button == 0) {
+					newItem.classList.toggle("checked");
+				}
+			});
+			deleteButton.addEventListener("click", () => {
+				newItem.parentElement.removeChild(newItem);
+			});
+			
+			let taskList = document.getElementById("taskList");
+			taskList.appendChild(newItem);
+			userInputElement.value = "";
+		}
+	</script>
+</body>
+</html>
