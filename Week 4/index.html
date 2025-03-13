@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Baumfire Hamburger Menu</title>
+
+	<style>
+		:root {
+			--white: #FFFFFF;
+			--background: #1F1E1D;
+			--text-unfocused: #2B2A2C;
+			--cursor: #F05337;
+			--cursor-hover: #BBBBBB1F;
+		}
+
+		body {
+			background-color: var(--white);
+			margin: 0;
+		}
+		
+		#custom-cursor {
+			position: fixed;
+
+			width:  5px;
+			height: 5px;
+			border-radius: 50%;
+			background-color: var(--cursor);
+		}
+		#custom-cursor::after {
+			content: "";
+			display: block;
+
+			width:  35px;
+			height: 35px;
+
+			border-radius: 50%;
+			border: 2px solid #FFFFFF20;
+
+			transform: translate(-50%, -50%);
+			position: relative;
+			top:  50%;
+			left: 50%;
+		}
+
+		#hamburger-bubble {
+			position: fixed;
+			right: 50px;
+			top:   55px;
+
+			width:  40px;
+			height: 40px;
+			border-radius: 50%;
+
+			background-color: var(--background);
+			transition: transform 150ms linear;
+		}
+		#hamburger-icon, #hamburger-icon::before, #hamburger-icon::after {
+			position: relative;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+
+			width: 20px;
+			height: 1px;
+			background-color: var(--white);
+		}
+		#hamburger-icon::before, #hamburger-icon::after {
+			display: block;
+			content: "";
+		}
+		#hamburger-icon::before {
+			top: -5px;
+		}
+		#hamburger-icon::after {
+			top: 5px;
+		}
+	</style>
+</head>
+<body>
+	<div id="custom-cursor"></div>
+	<div id="hamburger-bubble">
+		<div id="hamburger-icon"></div>
+	</div>
+</body>
+<script>
+	let hamburgerBubble = document.getElementById("hamburger-bubble");
+	let hamburgerBubbleRect = hamburgerBubble.getBoundingClientRect();
+
+	window.addEventListener("mousemove", event => {
+		let cursorX = event.clientX;
+		let cursorY = event.clientY;
+
+		let cursorElem = document.getElementById("custom-cursor");
+		cursorElem.style.transform = `translate(${cursorX - 2}px, ${cursorY - 2}px)`;
+
+		let hamburgerY = hamburgerBubbleRect.top + hamburgerBubbleRect.height / 2;
+		let hamburgerX = hamburgerBubbleRect.left + hamburgerBubbleRect.width / 2;
+		let distanceX = cursorX - hamburgerX;
+		let distanceY = cursorY - hamburgerY;
+		let distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
+		
+		if (distance < 40) {
+			hamburgerBubble.style.transform = `translate(${distanceX}px, ${distanceY}px)`;
+		}
+		else {
+			hamburgerBubble.style.transform = `translate(0px, 0px)`;
+		}
+	});
+</script>
+</html>
