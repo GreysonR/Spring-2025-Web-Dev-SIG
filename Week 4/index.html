@@ -1,7 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+	
 	<title>Baunfire Hamburger Menu</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
 	<style>
 		:root {
@@ -15,6 +23,8 @@
 		body {
 			background-color: var(--white);
 			margin: 0;
+			overflow-x: hidden;
+			overflow-y: scroll;
 		}
 		
 		#custom-cursor {
@@ -45,6 +55,7 @@
 			position: fixed;
 			right: 50px;
 			top:   55px;
+			z-index: 9999;
 
 			width:  40px;
 			height: 40px;
@@ -52,6 +63,8 @@
 
 			background-color: var(--background);
 			transition: transform 150ms linear;
+
+			cursor: pointer;
 		}
 		#hamburger-icon, #hamburger-icon::before, #hamburger-icon::after {
 			position: relative;
@@ -73,12 +86,111 @@
 		#hamburger-icon::after {
 			top: 5px;
 		}
+		#hamburger-bubble.menu-open {
+			filter: invert(100%);
+		}
+
+		#cover-menu {
+			position: fixed;
+			top:  0;
+			left: 0;
+			z-index: 9998;
+			width:  max(100vw, 100vh);
+			height: max(100vw, 100vh);
+
+			background: var(--background);
+
+			clip-path: circle(0px at calc(100vw - 85px) 75px);
+			transition: clip-path 800ms cubic-bezier(0.165, 0.84, 0.44, 1);
+
+			display: flex;
+			align-items: center;
+		}
+		#cover-menu.active {
+			clip-path: circle(130% at calc(100vw - 85px) 75px);
+		}
+		.link-list {
+			font-family: "Montserrat", sans-serif;
+			font-weight: bold;
+			color: var(--white);
+			font-size: 60px;
+			line-height: 140%;
+		}
+
+		.link-list li {
+			position: relative;
+
+			cursor: pointer;
+			
+			opacity: 0;
+			transform: translateX(-80px);
+
+			transition: opacity 500ms cubic-bezier(0.215, 0.610, 0.355, 1), transform 500ms cubic-bezier(0.215, 0.610, 0.355, 1), margin-left 650ms cubic-bezier(0.63,0.03,0.21,1);
+		}
+		.link-list li:nth-child(2) {
+			transition-delay: 100ms;
+		}
+		.link-list li:nth-child(3) {
+			transition-delay: 200ms;
+		}
+		.link-list li:nth-child(4) {
+			transition-delay: 300ms;
+		}
+
+		#cover-menu.active .link-list li {
+			opacity: 1;
+			transform: translateX(0px);
+		}
+		.link-list li::marker {
+			content: "";
+		}
+		.link-list li:hover {
+			margin-left: 30px;
+		}
+
+		.link-list li p:last-child, .link-list li p:first-child {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		.link-list li p:last-child {
+			clip-path: xywh(0px 0px 100% 100%);
+			transition: clip-path 700ms cubic-bezier(0.215, 0.610, 0.355, 1);
+		}
+		
+		.link-list li p:first-child {
+			color: var(--text-unfocused);
+		}
+		.link-list li:not(:hover).unfocus p:last-child {
+			clip-path: xywh(0px 0px 0% 100%);
+		}
 	</style>
 </head>
 <body>
 	<div id="custom-cursor"></div>
-	<div id="hamburger-bubble">
+	<div id="hamburger-bubble" onclick="toggleCoverMenu()">
 		<div id="hamburger-icon"></div>
+	</div>
+	<div id="cover-menu">
+		<div class="link-list">
+			<ul>
+				<li class="cover-link">
+					<p>Work</p>
+					<p>Work</p>
+				</li>
+				<li class="cover-link">
+					<p>Services</p>
+					<p>Services</p></li>
+				<li class="cover-link">
+					<p>About</p>
+					<p>About</p>
+				</li>
+				<li class="cover-link">
+					<p>Contact</p>
+					<p>Contact</p>
+				</li>
+			</ul>
+		</div>
 	</div>
 </body>
 <script>
@@ -105,5 +217,24 @@
 			hamburgerBubble.style.transform = `translate(0px, 0px)`;
 		}
 	});
+
+	function toggleCoverMenu() {
+		document.getElementById("cover-menu").classList.toggle("active");
+		document.getElementById("hamburger-bubble").classList.toggle("menu-open");
+	}
+
+	let coverLinks = document.getElementsByClassName("cover-link");
+	for (elem of coverLinks) {
+		elem.addEventListener("mouseover", () => {
+			for (elem of coverLinks) {
+				elem.classList.add("unfocus");
+			}
+		});
+		elem.addEventListener("mouseout", () => {
+			for (elem of coverLinks) {
+				elem.classList.remove("unfocus");
+			}
+		});
+	}
 </script>
 </html>
