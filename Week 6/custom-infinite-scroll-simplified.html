@@ -82,7 +82,7 @@
 			maxVelocity: Infinity,
 			friction: 0.99,
 			mass: 0.3,
-			gravity: 500, // 500
+			gravity: 0, // 500
 			hold: false,
 			element: document.getElementById("scroll-wrapper"),
 			
@@ -124,25 +124,14 @@
 			},
 
 			/*
-				Finds the signed difference between 2 angles: x - y
-				c is the conversion factor to 1 unit circle (360 for degrees, 2π for radians)
-			*/
-			angleDifference: function(x, y, c = Math.PI*2) {
-				function mod(a, b) {
-					return a - Math.floor(a / b) * b;
-				}
-				return mod(x - y + c/2, c) - c/2;
-			},
-			/*
 				THIS IS THE IMPORTANT PART OF THE CODE
 				Moves the images so they appear to loop infinitely
 			*/
 			updateImages: function() {
-				let { position: scrollPosition } = CustomScroll;
-				scrollPosition += window.innerHeight / 2; // add half the window height so things wrap based on the center of your window. Completely optional.
-				let loopMargin = 100; // margin between first element and last element of previous loop
+				let scrollY = CustomScroll.position + window.innerHeight / 2; // add half the window height so it wraps based on the center of your screen.
+				let loopMargin = 100; // margin between first element and last elements
 
-				// Total height of all the elements. This is also the "circumference" of the circle
+				// Total height of all the elements
 				let loopHeight = (() => {
 					let lastImg = images[images.length - 1];
 					return lastImg.position.y + lastImg.height;
@@ -151,20 +140,19 @@
 				for (let image of images) {
 					let { position, height } = image;
 					let imgY = position.y;
-					let loopNumber = Math.floor((scrollPosition - imgY) / loopHeight);
-					let loopTop = loopNumber * loopHeight;
+					let loopNumber = Math.floor((scrollY - imgY) / loopHeight);
+					let loopTop = loopNumber * loopHeight + imgY;
 
-					// figure out if to place below or above the frame by getting sign of angle difference
+					// figure out if to place at top or bottom of loop by figuring out if you are on the top or the bottom of the loop
 					let finalPosition = 0;
 
-					// difference meaning: positive = scrolled further than element, negative = not scrolled to element
-					// in other words: positive = element above top of window, negative = element below top of window 
-					let difference = CustomScroll.angleDifference(scrollPosition, imgY, loopHeight); 
-					if (difference < 0) { // place before frame
-						finalPosition = (loopTop + loopHeight) + imgY;
+					// difference meaning: negative = first half of loop, negative = second half of loop
+					let difference = (loopTop + loopHeight / 2) - scrollY;
+					if (difference < 0) { // place at bottom of loop
+						finalPosition = loopTop + loopHeight;
 					}
-					else { // place after frame
-						finalPosition = loopTop + imgY;
+					else { // place at top of loop
+						finalPosition = loopTop;
 					}
 					image.element.style.top = finalPosition + "px";
 				}
