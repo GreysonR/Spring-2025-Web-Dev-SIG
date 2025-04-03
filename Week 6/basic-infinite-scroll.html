@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Infinite Scrolling Images</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			background: #f0f0f0;
+		}
+		.image-container {
+			width: 100%;
+			max-width: 600px;
+		}
+		.image-container img {
+			width: 100%;
+			display: block;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="image-container" id="imageContainer"></div>
+
+	<script>
+		// List of images to repeat
+		const images = [
+			'https://placehold.co/600x400',
+			'https://placehold.co/600x400',
+			'https://placehold.co/600x400'
+		];
+
+		const container = document.getElementById('imageContainer');
+
+		// Function to add images
+		function addImages() {
+			images.forEach(src => {
+				const img = document.createElement('img');
+				img.src = src;
+				container.appendChild(img);
+			});
+		}
+
+		// Load initial set of images
+		addImages();
+
+		// Infinite scroll logic
+		window.addEventListener('scroll', () => {
+			if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
+				addImages(); // Append more images
+			}
+		});
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Custom Infinite Scroll</title>
+
+	<style>
+		body {
+			margin: 0;
+			overflow-y: hidden;
+		}
+		#scroll-wrapper {
+			position: relative;
+			margin-left: auto;
+			margin-right: auto;
+			width: 0px;
+		}
+		#scroll-wrapper>* {
+			transform: translateX(-50%);
+			position: absolute;
+		}
+	</style>
+</head>
+<body>
+	<div id="scroll-wrapper">
+		<!-- images go here -->
+	</div>
+
+	<script>
+		// Loading images
+		class ScrollingImage {
+			static count = 1;
+
+			position = { x: 0, y: 0 }; // x is relative to center, y is relative to top of scroll wrapper
+			width = 300;
+			height = 200;
+			url;
+			element;
+
+			constructor(width, height, position) {
+				// Set properties
+				this.position = position;
+				this.width = width;
+				this.height = height;
+
+				// Create image
+				this.url = `https://placeholder.pics/svg/${this.width}x${this.height}/DEDEDE/555555/${ScrollingImage.count++}`;
+				this.element = document.createElement("img");
+				this.element.src = this.url;
+				this.element.width = this.width;
+				this.element.height = this.height;
+
+				this.element.style.top = this.position.y + "px";
+				this.element.style.left = this.position.x + "px";
+
+				this.add();
+			}
+			add() {
+				document.getElementById("scroll-wrapper").appendChild(this.element);
+			}
+			delete() {
+				this.element.parentElement.removeChild(this.element);
+			}
+		}
+
+		let images = [
+			new ScrollingImage(400, 300, { x:  50,  y: 0 }),
+			new ScrollingImage(250, 500, { x: -250, y: 400 }),
+			new ScrollingImage(300, 300, { x:  300, y: 500 }),
+			new ScrollingImage(300, 300, { x: -20,  y: 1100 }),
+			new ScrollingImage(300, 300, { x: -200, y: 1600 }),
+			new ScrollingImage(300, 500, { x:  350, y: 1800 }),
+			new ScrollingImage(400, 400, { x: -200, y: 2300 }),
+			new ScrollingImage(700, 200, { x:  40,  y: 2870 }),
+		];
+		
+		// Custom scroll handler
+		let CustomScroll = {
+			position: 0,
+			velocity: 0,
+			maxVelocity: Infinity,
+			friction: 0.99,
+			mass: 0.3,
+			gravity: 500, // 500
+			hold: false,
+			element: document.getElementById("scroll-wrapper"),
+			
+			performance: {
+				lastTick: 0,
+				delta: 0.16,
+				update: function() {
+					let now = performance.now();
+					CustomScroll.performance.delta = (now - CustomScroll.performance.lastTick) / 1000;
+					CustomScroll.performance.lastTick = now;
+				}
+			},
+
+			update: function() {
+				CustomScroll.performance.update();
+				let { delta } = CustomScroll.performance;
+				let { position, velocity, maxVelocity, friction, gravity, hold } = CustomScroll;
+
+
+				if (Math.abs(velocity) > maxVelocity) {
+					velocity += (maxVelocity - Math.abs(velocity)) * Math.sign(velocity);
+				}
+
+				if (hold === false) {
+					velocity += gravity * delta; // add gravity
+				}
+
+				velocity *= (1 - friction) ** delta; // mult by friction
+				position += velocity * delta; // add to position
+				CustomScroll.element.style.transform = `translateY(${-position}px)`;
+
+				// don't forget to update position + velocity in object
+				CustomScroll.position = position;
+				CustomScroll.velocity = velocity;
+
+				CustomScroll.updateImages();
+
+				requestAnimationFrame(CustomScroll.update);
+			},
+
+			/*
+				Finds the signed difference between 2 angles: x - y
+				c is the conversion factor to 1 unit circle (360 for degrees, 2*Pi for radians)
+			*/
+			angleDifference: function(x, y, c = Math.PI*2) {
+				function mod(a, b) {
+					return a - Math.floor(a / b) * b;
+				}
+				return mod(x - y + c/2, c) - c/2;
+			},
+			updateImages: function() {
+				let { position: scrollPosition } = CustomScroll;
+				let loopMargin = 100;
+				let scrollHeight = (() => {
+					let lastImg = images[images.length - 1];
+					return lastImg.position.y + lastImg.height;
+				})() + loopMargin;
+
+				for (let image of images) {
+					let { position, height } = image;
+					let imgTop = position.y;
+					let frameTop = Math.floor((scrollPosition - imgTop) / scrollHeight) * scrollHeight;
+
+					// figure out if to place below or above the frame by getting sign of angle difference
+					let finalPosition = 0;
+
+					// difference meaning: positive scrolled further than element, negative means not scrolled to element
+					// in other words: positive = element above top of window, negative = element below top of window 
+					let difference = CustomScroll.angleDifference(scrollPosition, imgTop, scrollHeight); 
+					if (difference < 0) { // place before frame
+						finalPosition = (frameTop + scrollHeight) + imgTop;
+					}
+					else { // place after frame
+						finalPosition = frameTop + imgTop;
+					}
+					image.element.style.top = finalPosition + "px";
+				}
+			},
+		}
+		CustomScroll.update();
+		CustomScroll.performance.update();
+
+
+		// Desktop scroll override
+		document.addEventListener("wheel", event => {
+			event.preventDefault();
+
+			let force = event.deltaY; // treat dy as a force
+			CustomScroll.velocity += force / CustomScroll.mass;
+		}, { passive: false });
+
+		// Mobile scroll override
+		let touchPosition = 0;
+		let touchVelocities = [];
+		document.addEventListener("touchstart", event => {
+			event.preventDefault();
+
+			CustomScroll.hold = true;
+			CustomScroll.velocity.y = 0;
+			
+			touchPosition = event.touches[0].clientY;
+			touchVelocities.length = 0;
+		}, { passive: false });
+		document.addEventListener("touchmove", event => {
+			let currentPosition = event.touches[0].clientY;
+			let dy = currentPosition - touchPosition;
+			touchPosition = currentPosition;
+			touchVelocities.push(-dy);
+
+			if (touchVelocities.length > 10) {
+				touchVelocities.shift();
+			}
+
+			CustomScroll.position -= dy;
+		}, { passive: false });
+		document.addEventListener("touchend", event => {
+			CustomScroll.hold = false;
+			
+			if (touchVelocities.length === 0) {
+				return;
+			}
+			let avgVelocity = touchVelocities.reduce((prev, cur) => prev + cur) / touchVelocities.length;
+			CustomScroll.velocity = avgVelocity * 70;
+		});
+	</script>
+</body>
+</html>
