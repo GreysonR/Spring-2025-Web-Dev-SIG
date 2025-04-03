@@ -146,7 +146,7 @@
 					// figure out if to place at top or bottom of loop by figuring out if you are on the top or the bottom of the loop
 					let finalPosition = 0;
 
-					// difference meaning: negative = first half of loop, negative = second half of loop
+					// difference meaning: negative = first half of loop, positive = second half of loop
 					let difference = (loopTop + loopHeight / 2) - scrollY;
 					if (difference < 0) { // place at bottom of loop
 						finalPosition = loopTop + loopHeight;
