@@ -125,7 +125,7 @@
 
 			/*
 				Finds the signed difference between 2 angles: x - y
-				c is the conversion factor to 1 unit circle (360 for degrees, 2*Pi for radians)
+				c is the conversion factor to 1 unit circle (360 for degrees, 2π for radians)
 			*/
 			angleDifference: function(x, y, c = Math.PI*2) {
 				function mod(a, b) {
@@ -205,7 +205,7 @@
 				return;
 			}
 			let avgVelocity = touchVelocities.reduce((prev, cur) => prev + cur) / touchVelocities.length;
-			CustomScroll.velocity = avgVelocity * 70;
+			CustomScroll.velocity = avgVelocity * 90;
 		});
 	</script>
 </body>
