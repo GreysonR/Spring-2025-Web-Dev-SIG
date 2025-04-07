@@ -146,13 +146,13 @@
 					// figure out if to place at top or bottom of loop by figuring out if you are on the top or the bottom of the loop
 					let finalPosition = 0;
 
-					// difference meaning: negative = first half of loop, positive = second half of loop
-					let difference = (loopTop + loopHeight / 2) - scrollY;
-					if (difference < 0) { // place at bottom of loop
-						finalPosition = loopTop + loopHeight;
-					}
-					else { // place at top of loop
+					// difference meaning: negative = first half of loop (top), positive = second half of loop (bottom)
+					let difference = scrollY - (loopTop + loopHeight / 2);
+					if (difference < 0) { // place at top of loop
 						finalPosition = loopTop;
+					}
+					else { // place at bottom of loop
+						finalPosition = loopTop + loopHeight;
 					}
 					image.element.style.top = finalPosition + "px";
 				}
