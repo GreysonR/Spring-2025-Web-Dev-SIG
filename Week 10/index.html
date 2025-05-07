@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>2d Canvas</title>
+
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+
+	<script>
+		let canv = document.getElementById("canvas");
+		let ctx = canv.getContext("2d");
+		let starImgs = [];
+		let stars = [];
+		let mouse = { x: 0, y: 0 };
+
+		window.addEventListener("mousemove", event => {
+			mouse.x = event.clientX;
+			mouse.y = event.clientY;
+		});
+
+		class Star {
+			img;
+			x;
+			y;
+			z;
+			t;
+
+			constructor(x, y, z, t, img) {
+				this.x = x;
+				this.y = y;
+				this.z = z;
+				this.t = t;
+				this.img = img;
+			}
+		}
+
+		async function loadImg(src) {
+			let img = new Image();
+			img.src = src;
+			await img.decode();
+			return img;
+		}
+
+		Promise.all([
+			loadImg("img/star1.png"),
+			loadImg("img/star2.png"),
+		]).then(imgs => {
+			starImgs.push(...imgs);
+			
+			initCanv();
+			createStars();
+			main();
+		});
+
+		function initCanv() {
+			canv.width = window.innerWidth;
+			canv.height = window.innerHeight;
+		}
+		function createStars() {
+			const numStars = Math.floor((canv.width * canv.height) / 1000 / 15); // constant star density
+			for (let i = 0; i < numStars; ++i) {
+				let img = starImgs[Math.floor(Math.random() * starImgs.length)];
+				let x = (Math.random() * 1.5 - 0.25) * window.innerWidth;
+				let y = (Math.random() * 1.5 - 0.25) * window.innerHeight;
+				let z = Math.random();
+				let t = Math.random();
+				stars.push(new Star(x, y, z, t, img));
+			}
+
+			// z sort
+			stars.sort((a, b) => a.z - b.z);
+		}
+		function main() {
+			// Clear background
+				ctx.fillStyle = "#0A1113";
+				ctx.fillRect(0, 0, canv.width, canv.height);
+
+			
+			// Render stars
+			const zOffsetScale = 0.3;
+			const zScale = [0.06, 0.15]; // minScale, maxScale
+			const mouseOffset = { x: mouse.x - canv.width / 2, y: mouse.y - canv.height / 2 };
+			for (let star of stars) {
+				let { img, z, t } = star;
+				let scale = zScale[0] + (zScale[1] - zScale[0]) * z;
+				let opacity = Math.sin((performance.now() / 1000 / 1) + (2*Math.PI * t)) ** 2;
+				let offset = { x: mouseOffset.x * zOffsetScale * z, y: mouseOffset.y * zOffsetScale * z };
+				ctx.globalAlpha = opacity;
+				ctx.drawImage(img, star.x + offset.x, star.y + offset.y, img.width * scale, img.height * scale);
+				ctx.globalAlpha = 1;
+			}
+
+			requestAnimationFrame(main);
+		}
+	</script>
+</body>
+</html>
